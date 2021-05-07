@@ -1,17 +1,19 @@
 //DECLARATION VARIABLES :
 var pcPoints = 0;
 var userPoints = 0;
+var mutedTest = false;
 
 //SELECTION DES ID BALISES IMG
 var userImage = document.getElementById("imgUser");
 var pcImage = document.getElementById("imgPC");
 var soundImg = document.getElementById("sound");
+
 //DECLARATION DES IMAGES
 var pierreImg = "assets/img/pierre.jpg"
 var feuilleImg = "assets/img/feuille.jpg"
 var ciseauxImg = "assets/img/ciseaux.jpg"
-var speakers = "assets/img/speaker.png"
-var muted = "assets/img/sound.png"
+var sound = "assets/img/sound.png"
+var muted = "assets/img/muted.png"
 
 //SELECTION DES DIFFERENT ID
 var egality = document.getElementById("egality");
@@ -39,6 +41,7 @@ const iaChoice =() =>{
 
 //COMPARAISON DES CHOIXS
 const comparison = (user, pc) =>{
+    
     //USER CHOICE = PIERRE
     if(user == "pierre" && pc == "pierre"){
         egality.classList.remove("d-none");
@@ -49,15 +52,15 @@ const comparison = (user, pc) =>{
     }
     else if(user == "pierre" && pc == "feuille"){
         defait.classList.remove("d-none");
-        userImage.src = "assets/img/pierre.jpg";
-        pcImage.src = "assets/img/feuille.jpg";
+        userImage.src = pierreImg;
+        pcImage.src = feuilleImg;
         
         return 2;
     }
     else if(user == "pierre" && pc == "ciseaux"){
         victory.classList.remove("d-none");
-        userImage.src = "assets/img/pierre.jpg";
-        pcImage.src = "assets/img/ciseaux.jpg";
+        userImage.src = pierreImg;
+        pcImage.src = ciseauxImg;
         
         return 1;
     }
@@ -65,40 +68,40 @@ const comparison = (user, pc) =>{
     //USER CHOICE = FEUILLE
     if(user == "feuille" && pc == "pierre"){
         victory.classList.remove("d-none");
-        pcImage.src = "assets/img/pierre.jpg";
-        userImage.src = "assets/img/feuille.jpg";
+        pcImage.src = pierreImg;
+        userImage.src = feuilleImg;
         return 1;
     }
     else if(user == "feuille" && pc == "feuille"){
         egality.classList.remove("d-none");
-        userImage.src = "assets/img/feuille.jpg";
-        pcImage.src = "assets/img/feuille.jpg";
+        userImage.src = feuilleImg;
+        pcImage.src = feuilleImg;
         return 0;
     }
     else if(user == "feuille" && pc == "ciseaux"){
         defait.classList.remove("d-none");
-        userImage.src = "assets/img/feuille.jpg";
-        pcImage.src = "assets/img/ciseaux.jpg";
+        userImage.src = feuilleImg;
+        pcImage.src = ciseauxImg;
         return 2;
     }
 
     //USER CHOICE = CISEAUX
     if(user == "ciseaux" && pc == "pierre"){
         defait.classList.remove("d-none");
-        pcImage.src = "assets/img/pierre.jpg";
-        userImage.src = "assets/img/ciseaux.jpg";
+        pcImage.src = pierreImg;
+        userImage.src = ciseauxImg;
         return 2; 
     }
     else if(user == "ciseaux" && pc == "feuille"){
         victory.classList.remove("d-none");
-        pcImage.src = "assets/img/feuille.jpg";
-        userImage.src = "assets/img/ciseaux.jpg";
+        pcImage.src = feuilleImg;
+        userImage.src = ciseauxImg;
         return 1;
     }
     else if(user == "ciseaux" && pc == "ciseaux"){
         egality.classList.remove("d-none");
-        pcImage.src = "assets/img/ciseaux.jpg";
-        userImage.src = "assets/img/ciseaux.jpg";
+        pcImage.src = ciseauxImg;
+        userImage.src = ciseauxImg;
         return 0;
     }
 }
@@ -121,6 +124,8 @@ const points = (count) =>{
     } 
     
 }
+
+//Verification fin de partie
 function countTotal(total){
     if (total == 1){
         win.classList.remove("d-none");
@@ -135,20 +140,27 @@ function countTotal(total){
     } 
 }
 
+//Fonction de mise a zéro des display;
+const NotDisplay = () =>{
+    let tableNone = document.getElementsByClassName("noDisplay");
+    for (let i = 0; i < tableNone.length; i++ ){
+        tableNone[i].classList.add("d-none");
+    }
+}
+
 //RESET BUTTON
 $("#reset").click(function(){
+
+    //Point à zéro
     pcPoints = 0;
     userPoints = 0;
     $('#pcPoints').html(`VOUS : ${pcPoints}`);
     $('#userPoints').html(`VOUS : ${userPoints}`);
 
-    egality.classList.add("d-none");
-    victory.classList.add("d-none");
-    defait.classList.add("d-none");
-    win.classList.add("d-none");
-    lose.classList.add("d-none");
-    resetbtn.classList.add("d-none");
-
+    //Mise a zéro des display
+    NotDisplay();
+    
+    //Désactive le bouton
     launch.disabled = false;
 });
 
@@ -156,26 +168,30 @@ $("#reset").click(function(){
 $("#launch").click(function(){
     let userChoice = document.getElementById('choice').value;
     document.getElementById("ost").play();
-    egality.classList.add("d-none");
-    victory.classList.add("d-none");
-    defait.classList.add("d-none");
+    //remise a zéro des displays
+    NotDisplay();
     
+    //Comparaison des choix
     let count = comparison(userChoice, iaChoice());
     countTotal(points(count));
 });
 
-//Au chargement de la page
-$( document ).ready(function() {
-    
-});
 
+//GESTION DU SON
 $("#sound").click(function(){
-
-    if(soundImg.src != speakers){
+    console.log(mutedTest)
+    if(mutedTest == false){
         soundImg.src = muted;
+        document.getElementById("ost").muted = true;
+        document.getElementById("applause").muted = true;
+        console.log("MUTED")
+        mutedTest = true;
     }
     else{
-        soundImg.src = speakers;
-    }
-        
+        soundImg.src = sound;
+        document.getElementById("ost").muted = false;
+        document.getElementById("applause").muted = false;
+        console.log("UNMUTED")
+        mutedTest = false;
+    }  
 });
